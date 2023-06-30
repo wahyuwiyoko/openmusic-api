@@ -1,0 +1,631 @@
+openapi: 3.0.2
+info:
+  title: OpenMusic RESTful API
+  description: A simple RESTful API for music data running on local server.
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/
+    description: Running server locally
+paths:
+  /albums:
+    post:
+      tags:
+        - Albums
+      summary: Add a new album to the database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlbumData'
+            example:
+              name: A Head Full of Dreams
+              year: 2015
+      responses:
+        '201':
+          description: Success add new album
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+              example:
+                status: success
+                data:
+                  albumId: album-Qbax5Oy7L8WKf74l
+        '400':
+          description: Failed to add album (bad request)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientError'
+        '500':
+          description: Failed to add album (server error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    get:
+      tags:
+        - Albums
+      summary: Get all album from the database
+      parameters:
+        - name: name
+          in: query
+          description: Filter albums by name
+          required: false
+          schema:
+            type: string
+          example: A Head Full of Dreams
+        - name: year
+          in: query
+          description: Filter albums by year
+          required: false
+          schema:
+            type: integer
+          example: 2015
+      responses:
+        '200':
+          description: Success get all album data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    default: success
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        year:
+                          type: integer
+              examples:
+                Empty album:
+                  description: Empty album or not found
+                  value:
+                    status: success
+                    data:
+                      albums: []
+                Many album:
+                  description: Found many album
+                  value:
+                    status: success
+                    data:
+                      albums:
+                        - id: album-LqbV5Oy7L8Wkf12
+                          name: Cheating on You
+                          year: 2019
+                        - id: album-Qbax5Oy7L8WKf74l
+                          name: A Head Full of Dreams
+                          year: 2015
+                        - id: album-56DqT0VhNdvvNRqt
+                          name: Cry Baby
+                          year: 2015
+        '500':
+          description: Failed to get album (server error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /albums/{id}:
+    get:
+      tags:
+        - Albums
+      summary: Get album detail from database
+      parameters:
+        - name: id
+          in: path
+          description: Get album detail by ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success get album
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      album:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          year:
+                            type: string
+                          songs:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                title:
+                                  type: string
+                                performer:
+                                  type: string
+              example:
+                status: success
+                data:
+                  album:
+                    id: album-Qbax5Oy7L8WKf74l
+                    name: A Head Full of Dreams
+                    year: 2015
+                    songs:
+                      - id: song-4if9lfHAXFGTATYs
+                        title: Hymn For The Weekend
+                        performer: Coldplay
+                      - id: song-kSVpqrXnSeO5J4Kb
+                        title: Everglow
+                        performer: Coldplay
+                      - id: song-IySNhuIORTm2IbPn
+                        title: Army of One
+                        performer: Coldplay
+        '404':
+          description: Album not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusAndMessage'
+              example:
+                status: fail
+                message: Album not found.
+        '500':
+          description: Failed to get album (server error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    put:
+      tags:
+        - Albums
+      summary: Update an existing album from database
+      parameters:
+        - name: id
+          in: path
+          description: Update an existing album by ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlbumData'
+            example:
+              name: Everyday Life
+              year: 2019
+      responses:
+        '200':
+          description: Success update album
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusAndMessage'
+              example:
+                status: success
+                message: Successfully updated the album.
+        '400':
+          description: Failed to update album (bad request)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientError'
+        '404':
+          description: Album not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusAndMessage'
+              example:
+                status: fail
+                message: Failed to update album. ID not found.
+        '500':
+          description: Failed to update album (server error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    delete:
+      tags:
+        - Albums
+      summary: Delete album from database
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Delete an existing album by ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success delete album
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusAndMessage'
+              example:
+                status: success
+                message: Successfully deleted the album.
+        '404':
+          description: Album not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusAndMessage'
+              example:
+                status: fail
+                message: Failed to delete album. ID not found.
+        '500':
+          description: Failed to delete album (server error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /songs:
+    post:
+      tags:
+        - Songs
+      summary: Add a new song to the database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongData'
+            example:
+              title: Cheating on You
+              year: 2019
+              performer: Charlie Puth
+              genre: Contemporary R&B Trap
+              duration: 200
+              albumId: album-vu_Z29GdMfNjPv-I
+      responses:
+        '201':
+          description: Success add new song
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      songId:
+                        type: string
+              example:
+                status: success
+                data:
+                  songId: song-lf8fWGLiJsBN1QQ6
+        '400':
+          description: Failed to add song (bad request)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientError'
+        '500':
+          description: Failed to add song (server error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    get:
+      tags:
+        - Songs
+      summary: Get all song from the database
+      parameters:
+        - name: title
+          in: query
+          description: Filter songs by title
+          required: false
+          schema:
+            type: string
+          example: Cheating on You
+        - name: performer
+          in: query
+          description: Filter songs by performer
+          required: false
+          schema:
+            type: string
+          example: Charlie Puth
+      responses:
+        '200':
+          description: Success get all song data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    default: success
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        performer:
+                          type: string
+              examples:
+                Empty song:
+                  description: Empty song or not found
+                  value:
+                    status: success
+                    data:
+                      songs: []
+                Many song:
+                  description: Found many song
+                  value:
+                    status: success
+                    data:
+                      songs:
+                        - id: song-lf8fWGLiJsBN1QQ6
+                          title: Cheating on You
+                          performer: Charlie Puth
+                        - id: song-4if9lfHAXFGTATYs
+                          title: Hymn For The Weekend
+                          performer: Coldplay
+                        - id: song-4JDT0VhNdvvGTkEK
+                          title: Play Date
+                          performer: Melanie Martinez
+        '500':
+          description: Failed to get song (server error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /songs/{id}:
+    get:
+      tags:
+        - Songs
+      summary: Get song detail from database
+      parameters:
+        - name: id
+          in: path
+          description: Get song detail by ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success get song
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      song:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          title:
+                            type: string
+                          year:
+                            type: integer
+                            format: int32
+                          performer:
+                            type: string
+                          genre:
+                            type: string
+                          duration:
+                            type: integer
+                            format: int32
+                          albumId:
+                            type: string
+              example:
+                status: success
+                data:
+                  song:
+                    id: song-lf8fWGLiJsBN1QQ6
+                    title: Cheating on You
+                    year: 2019
+                    performer: Charlie Puth
+                    genre: Contemporary R&B Trap
+                    duration: 200
+                    albumId: album-vu_Z29GdMfNjPv-I
+        '404':
+          description: Song not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusAndMessage'
+              example:
+                status: fail
+                message: Song not found.
+        '500':
+          description: Failed to get song (server error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    put:
+      tags:
+        - Songs
+      summary: Update an existing song from database
+      parameters:
+        - name: id
+          in: path
+          description: Update an existing song by ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongData'
+            example:
+              title: One Call Away
+              year: 2016
+              performer: Charlie Puth
+              genre: R&B/Soul, Pop
+              duration: 195
+              albumId: album-Qbax5Oy7L8WKf74l
+      responses:
+        '200':
+          description: Success update song
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusAndMessage'
+              example:
+                status: success
+                message: Successfully updated the song.
+        '400':
+          description: Failed to update song (bad request)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientError'
+        '404':
+          description: Song not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusAndMessage'
+              example:
+                status: fail
+                message: Failed to update song. ID not found.
+        '500':
+          description: Failed to update song (server error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    delete:
+      tags:
+        - Songs
+      summary: Delete song from database
+      parameters:
+        - name: id
+          in: path
+          description: Delete an existing song by ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success delete song
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusAndMessage'
+              example:
+                status: success
+                message: Successfully deleted the song.
+        '404':
+          description: Song not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusAndMessage'
+              example:
+                status: fail
+                message: Failed to delete song. ID not found.
+        '500':
+          description: Failed to delete song (server error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+externalDocs:
+  description: GitHub Repository
+  url: https://github.com/wahyuwiyoko/openmusic-api
+components:
+  schemas:
+    SongData:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        year:
+          type: integer
+          format: int32
+          maxLength: 4
+        performer:
+          type: string
+          minLength: 1
+        genre:
+          type: string
+          minLength: 1
+        duration:
+          type: integer
+          format: int32
+          minLength: 1
+        albumId:
+          type: string
+          minLength: 1
+    AlbumData:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        year:
+          type: integer
+          format: int32
+          maxLength: 4
+    StatusAndMessage:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+    ClientError:
+      type: object
+      properties:
+        status:
+          type: string
+          default: fail
+        message:
+          type: string
+    ServerError:
+      type: object
+      properties:
+        status:
+          type: string
+          default: error
+        message:
+          type: string
+          default: Sorry, there was a server failure.
