@@ -1,0 +1,36 @@
+{
+  "name": "openmusic-api",
+  "version": "1.0.0",
+  "description": "A simple CRUD API for music data. Built with Node.js and hapi framework.",
+  "main": "./src/server.js",
+  "scripts": {
+    "server": "nodemon ./src/server.js",
+    "lint": "eslint ./src",
+    "migrate": "node-pg-migrate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wahyuwiyoko/openmusic-api"
+  },
+  "keywords": ["music-api", "restful-api"],
+  "author": "Wahyu Wiyoko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wahyuwiyoko/openmusic-api/issues"
+  },
+  "homepage": "https://wahyuwiyoko.github.io/openmusic-api",
+  "dependencies": {
+    "@hapi/hapi": "^21.3.2",
+    "dotenv": "^16.3.1",
+    "joi": "^17.9.2",
+    "nanoid": "^3.1.20",
+    "node-pg-migrate": "^6.2.2",
+    "pg": "^8.11.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.43.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "nodemon": "^2.0.22"
+  }
+}
