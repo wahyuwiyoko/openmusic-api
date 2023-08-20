@@ -3,6 +3,9 @@
 A simple CRUD API for music data. Built with [Node.js](https://nodejs.org/)
 and [hapi](https://hapi.dev/) framework for learning RESTful API.
 
+This project is not for production and is not
+currently being actively maintained.
+
 ## Installation & Usage Instructions
 
 Before using this project, you must have
