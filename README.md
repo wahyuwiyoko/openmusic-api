@@ -14,25 +14,30 @@ Before using this project, you must have
 
 Clone the project:
 
-```bash
+```sh
 git clone https://github.com/wahyuwiyoko/openmusic-api.git
 ```
 
 Open the directory and install the dependencies:
 
-```bash
+```sh
 cd openmusic-api
 npm install
 ```
 
 Create a database in PostgreSQL shell with name `openmusic`:
 
-```bash
+```sh
 CREATE DATABASE openmusic;
 ```
 
-Create `.env` file in the root directory and add the following
-environment variables to your `.env` file:
+Copy the [`.env.example`](.env.example) file into `.env` in the root directory:
+
+```sh
+cp .env.example .env
+```
+
+Inside `.env` file, add the following environment variables:
 
 ```
 # Server configuration
@@ -67,13 +72,13 @@ PGPORT=5432
 
 Create tables automatically in the project:
 
-```bash
+```sh
 npm run migrate up
 ```
 
 Run the server:
 
-```
+```sh
 npm run server
 ```
 
