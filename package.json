@@ -1,6 +1,6 @@
 {
   "name": "openmusic-api",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A simple CRUD API for music data. Built with Node.js and hapi framework.",
   "main": "./src/server.js",
   "scripts": {
