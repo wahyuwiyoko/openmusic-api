@@ -1,4 +1,4 @@
-openapi: 3.0.2
+openapi: 3.1.0
 info:
   title: OpenMusic RESTful API
   description: A simple RESTful API for music data running on local server.
